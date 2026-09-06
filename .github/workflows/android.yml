@@ -16,13 +16,18 @@ jobs:
     - name: Grant gradlew execute permission
       run: chmod +x ./gradlew
 
-    # 关键：改成 JDK17，适配 AGP 8.x
     - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
+
+    # =====新增：接受SDK许可，安装SDK组件=====
+    - name: Accept Android SDK licenses
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+    # ======================================
 
     - name: Build with Gradle Release APK
       run: ./gradlew assembleRelease
@@ -31,5 +36,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: apk-build
-        # 这个项目主模块不是app，看项目结构是yuehong
         path: yuehong/build/outputs/apk/release/*.apk
